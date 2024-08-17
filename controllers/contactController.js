@@ -1,7 +1,10 @@
-const { escape } = require('mysql2');
 const db = require('../config/db');
 const axios = require('axios');
-let CRM = [];
+require('dotenv').config();
+
+const FRESHSALES_API_KEY = process.env.FRESHSALES_API_KEY;
+const FRESHSALES_API_URL = process.env.FRESHSALES_API_URL;
+
 exports.createContact = async (req, res) => {
     const { first_name, last_name, email, mobile_number, data_store } = req.body;
     if (data_store === 'DATABASE') {
@@ -14,7 +17,7 @@ exports.createContact = async (req, res) => {
     else if (data_store === 'CRM') {
         try {
             const response = await axios.post(
-                'https://interactly-744225354823593357.myfreshworks.com/crm/sales/api/contacts',
+                FRESHSALES_API_URL,
                 {
                     contact: {
                         first_name: first_name,
@@ -25,7 +28,7 @@ exports.createContact = async (req, res) => {
                 },
                 {
                     headers: {
-                        'Authorization': 'Token token=bdIrsvr-p5ISO3OqWCSBsA',
+                        'Authorization': `Token token=${FRESHSALES_API_KEY}`,
                         'Content-Type': 'application/json'
                     }
                 }
@@ -58,10 +61,10 @@ exports.getContact = async (req, res) => {
     else if (data_store === 'CRM') {
         try {
             const response = await axios.get(
-                `https://interactly-744225354823593357.myfreshworks.com/crm/sales/api/contacts/${contact_id}?include=sales_accounts`,
+                `${FRESHSALES_API_URL}/${contact_id}?include=sales_accounts`,
                 {
                     headers: {
-                        'Authorization': 'Token token=bdIrsvr-p5ISO3OqWCSBsA',
+                        'Authorization': `Token token=${FRESHSALES_API_KEY}`,
                         'Content-Type': 'application/json'
                     }
                 }
@@ -92,7 +95,7 @@ exports.updateContact = async (req, res) => {
         try {
             // Update the contact in Freshworks CRM
             const response = await axios.put(
-                `https://interactly-744225354823593357.myfreshworks.com/crm/sales/api/contacts/${contact_id}`,
+                `${FRESHSALES_API_URL}/${contact_id}`,
                 {
                     contact: {
                         email: new_email,
@@ -101,7 +104,7 @@ exports.updateContact = async (req, res) => {
                 },
                 {
                     headers: {
-                        'Authorization': 'Token token=bdIrsvr-p5ISO3OqWCSBsA',
+                        'Authorization': `Token token=${FRESHSALES_API_KEY}`,
                         'Content-Type': 'application/json'
                     }
                 }
@@ -147,10 +150,10 @@ exports.deleteContact = async (req, res) => {
         try {
             // Delete the contact from Freshworks CRM
             const response = await axios.delete(
-                `https://interactly-744225354823593357.myfreshworks.com/crm/sales/api/contacts/${contact_id}`,
+                `${FRESHSALES_API_URL}/${contact_id}`,
                 {
                     headers: {
-                        'Authorization': 'Token token=bdIrsvr-p5ISO3OqWCSBsA',
+                        'Authorization': `Token token=${FRESHSALES_API_KEY}`,
                         'Content-Type': 'application/json'
                     }
                 }
